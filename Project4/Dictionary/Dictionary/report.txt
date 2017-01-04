@@ -1,0 +1,16 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1345\cocoasubrtf380
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww14940\viewh10980\viewkind0
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+George Archbold\
+6/4/15\
+Project 4\
+
+\fs22 \
+
+\fs24 	I began this project by picking which data structure I wanted to use. From the start it was pretty clear that a hash table would be the best choice considering the nature of a dictionary. I began by just using an array with the max amount of array slots allowed by the spec, but each array slot just held a vector of strings. I had two additional functions: hash(), and signature(string s). Every time a word was inputted by user the program would hash the string to find the appropriate array slot. it would then iterate through the vector and and call the signature function on each entry and check that against the signature of the inputted word, and out put any matches. The problem with this method was the excess signature calls, which was just an alphabetical letter sort. it would call it twice on the inputed word, and every time in checked a word in the vector, which slowed down the program a lot.\
+	This is when I had to figure out a way to avoid the excess amount of sorting my program required to execute properly. I created two new classes. The first was the word class, which just stored a string with two string data types, one sorted and one original. I then added a bucket class that had member vector of words and an add word function. It takes in a string, creates a word object from it and pushes it back to the vector. I then changed the DictionaryImpl insert function so that overtime you add a string, it creates a word, hashes its sorted member variable to find the appropriate bucket and then calls addWord to that bucket\'92s vector. Then in the new program when it looked up a word, it would remove non letters and check if its empty and if not it would use the input string to make a new word object, and hash its sorted member variable to find the correct bucket. it would then iterated through the bucket\'92s vector of words and check the temp word\'92s sorted member variable against all the sorted member variables of each word in the array and call the callBack function on the matches. This new method allowed me to bypass the constant signature function calls, which slowed it down greatly. Each word now has a sorted version in it so that it can always be accessed instead of resorted each time the program checks.}

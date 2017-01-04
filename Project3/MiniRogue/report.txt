@@ -1,0 +1,454 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1345\cocoasubrtf380
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red63\green110\blue116;\red170\green13\blue145;\red28\green0\blue207;
+\red38\green71\blue75;\red15\green116\blue1;\red63\green119\blue73;\red46\green13\blue110;\red47\green131\blue61;
+\red65\green124\blue66;\red92\green38\blue153;\red40\green228\blue23;\red31\green236\blue14;\red30\green231\blue15;
+\red196\green26\blue22;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720
+
+\fs22 \cf0 \expnd0\expndtw0\kerning0
+George Archbold\
+5/26/15\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\qc
+\cf0 \expnd0\expndtw0\kerning0
+Project 3\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+\
+	I began my project by trying to create the dungeon and the rooms, even though professor Smallberg said this might be best saved until the end. I did not implement a recursive move function for the goblin, however I did implement a recursive function for the random generation of the dungeon:\
+\
+\pard\tx529\pardeftab720
+
+\f1\fs18 \cf2 \expnd0\expndtw0\kerning0
+\CocoaLigature0 Point\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+Dungeon\cf0 \expnd0\expndtw0\kerning0
+::generateRooms(\cf3 \expnd0\expndtw0\kerning0
+int\cf0 \expnd0\expndtw0\kerning0
+ i, \cf2 \expnd0\expndtw0\kerning0
+Point\cf0 \expnd0\expndtw0\kerning0
+ corner)\{\
+    \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+( i == \cf4 \expnd0\expndtw0\kerning0
+0\cf0 \expnd0\expndtw0\kerning0
+)\{\
+        \cf3 \expnd0\expndtw0\kerning0
+return\cf0 \expnd0\expndtw0\kerning0
+ \cf5 \expnd0\expndtw0\kerning0
+drawRoom\cf0 \expnd0\expndtw0\kerning0
+(corner);\
+    \}\
+    \
+    \cf2 \expnd0\expndtw0\kerning0
+Point\cf0 \expnd0\expndtw0\kerning0
+ x = \cf5 \expnd0\expndtw0\kerning0
+drawRoom\cf0 \expnd0\expndtw0\kerning0
+(corner);\
+ \
+    \cf5 \expnd0\expndtw0\kerning0
+generateCorridor\cf0 \expnd0\expndtw0\kerning0
+(corner, x);\
+    \cf3 \expnd0\expndtw0\kerning0
+return\cf0 \expnd0\expndtw0\kerning0
+ \cf5 \expnd0\expndtw0\kerning0
+generateRooms\cf0 \expnd0\expndtw0\kerning0
+(i-\cf4 \expnd0\expndtw0\kerning0
+1\cf0 \expnd0\expndtw0\kerning0
+, x);\cf5 \expnd0\expndtw0\kerning0
+   \
+\cf0 \expnd0\expndtw0\kerning0
+\}\
+\
+	This function takes in a point and a int value for the number of rooms. It recursively calls itself drawing a randomly sized room beginning at the given point. It then returns a random point inside that room, which is then used by the generateCorridor(corner, x) function which draws a corridor between the randomly returned point in the new room and a point from the existing rooms. The draw rooms function stores each point that it clears out of the dungeon in a vector of points called empty space, which I then use to randomly place all the other objects in the game.\
+	The dungeon is the main control board for the whole game. Each actor contains a pointer to the dungeon providing a way for the monsters and players to interact with each other. The dungeon has 3 vectors: \
+	-one monster vector to store pointers to all the monsters\
+	-one object vector to store all the objects in the dungeon\
+	-one action vector to store strings that print out what happen that turn\
+I also created a point class that I use in the dungeon class to better keep track of all the positions in the dungeon. The dungeon also has two 2D arrays:\
+	-grid which stores the walls and the rooms\
+	-gameGrid which keep tracks of all the game interactions\
+One feature that may seem odd about my dungeon is that the function that makes the player use an item from his inventory is located in the Dungeon.cpp file:\
+\pard\tx529\pardeftab720
+
+\fs12 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx529\pardeftab720
+
+\fs18 \cf3 \expnd0\expndtw0\kerning0
+void\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+Dungeon\cf0 \expnd0\expndtw0\kerning0
+::useItem()\{\
+    \cf6 \expnd0\expndtw0\kerning0
+//check which item the player wants to use\cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx529\pardeftab720
+\cf7 \expnd0\expndtw0\kerning0
+    //cast it to match the inventory index\
+\pard\tx529\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+    \
+    \cf6 \expnd0\expndtw0\kerning0
+//check for valid inventory entry based in its size\cf0 \expnd0\expndtw0\kerning0
+\
+    \cf2 \expnd0\expndtw0\kerning0
+   \
+\cf0 \expnd0\expndtw0\kerning0
+    \cf6 \expnd0\expndtw0\kerning0
+//check if the item to be used is a weapon or a scroll using dynamic cast\cf0 \expnd0\expndtw0\kerning0
+\
+    \cf2 \expnd0\expndtw0\kerning0
+Weapon\cf0 \expnd0\expndtw0\kerning0
+* check = \cf3 \expnd0\expndtw0\kerning0
+dynamic_cast\cf0 \expnd0\expndtw0\kerning0
+<\cf2 \expnd0\expndtw0\kerning0
+Weapon\cf0 \expnd0\expndtw0\kerning0
+*>(\cf5 \expnd0\expndtw0\kerning0
+player\cf0 \expnd0\expndtw0\kerning0
+()->\cf2 \expnd0\expndtw0\kerning0
+Inventory\cf0 \expnd0\expndtw0\kerning0
+[\cf8 \expnd0\expndtw0\kerning0
+i\cf0 \expnd0\expndtw0\kerning0
+]);\
+    \cf2 \expnd0\expndtw0\kerning0
+Scroll\cf0 \expnd0\expndtw0\kerning0
+* check2 = \cf3 \expnd0\expndtw0\kerning0
+dynamic_cast\cf0 \expnd0\expndtw0\kerning0
+<\cf2 \expnd0\expndtw0\kerning0
+Scroll\cf0 \expnd0\expndtw0\kerning0
+*>(\cf5 \expnd0\expndtw0\kerning0
+player\cf0 \expnd0\expndtw0\kerning0
+()->\cf2 \expnd0\expndtw0\kerning0
+Inventory\cf0 \expnd0\expndtw0\kerning0
+[\cf8 \expnd0\expndtw0\kerning0
+i\cf0 \expnd0\expndtw0\kerning0
+]);\
+    \
+    \cf6 \expnd0\expndtw0\kerning0
+//if the item used is a weapon set the players weapon to the specified weapon\cf0 \expnd0\expndtw0\kerning0
+\
+       \
+\pard\tx529\pardeftab720
+\cf9 \expnd0\expndtw0\kerning0
+    //if the item used is a scroll :\
+\pard\tx529\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+        \cf6 \expnd0\expndtw0\kerning0
+//check the name of the scroll and based on that implement its effect\
+		\cf0 \expnd0\expndtw0\kerning0
+     \cf6 \expnd0\expndtw0\kerning0
+//scroll of tele : give player new rand coordinates\
+		     //scroll of health/dex/armor/str : raise attributes\cf0 \expnd0\expndtw0\kerning0
+\
+\
+\pard\tx529\pardeftab720
+\cf10 \expnd0\expndtw0\kerning0
+       //if it was a scroll erase it from the inventory\
+       			//iterate though the inventory and delete the used scroll\
+\pard\tx529\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+\}\
+\pard\tx529\pardeftab720
+
+\fs22 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx529\pardeftab720
+
+\fs18 \cf0 \expnd0\expndtw0\kerning0
+\
+	The Actor class contains all the get and set methods for the attributes of the actors. Player inherits Actor but also has its equipped weapon, and inventory and a value to store its max health. It has a printInventory function (prints out the contents of the Inventory vector), a checkItem function (that checks the current position of the player and iterates through the dungeons vector of game objects to check if there are also any items at the same position) and an attack function:\
+\pard\tx529\pardeftab720
+
+\fs16 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx529\pardeftab720
+
+\fs18 \cf3 \expnd0\expndtw0\kerning0
+void\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+Player\cf0 \expnd0\expndtw0\kerning0
+::attack(\cf2 \expnd0\expndtw0\kerning0
+Actor\cf0 \expnd0\expndtw0\kerning0
+* monster)\{\
+    \
+    \cf2 \expnd0\expndtw0\kerning0
+Monster\cf0 \expnd0\expndtw0\kerning0
+* temp = \cf3 \expnd0\expndtw0\kerning0
+dynamic_cast\cf0 \expnd0\expndtw0\kerning0
+<\cf2 \expnd0\expndtw0\kerning0
+Monster\cf0 \expnd0\expndtw0\kerning0
+*>(monster);\
+    \cf11 \expnd0\expndtw0\kerning0
+string\cf0 \expnd0\expndtw0\kerning0
+ monsterName;\
+    \cf3 \expnd0\expndtw0\kerning0
+char\cf0 \expnd0\expndtw0\kerning0
+ c = temp->\cf5 \expnd0\expndtw0\kerning0
+getType\cf0 \expnd0\expndtw0\kerning0
+();\
+    \
+\pard\tx529\pardeftab720
+\cf12 \expnd0\expndtw0\kerning0
+    switch statement to check the monsters type and assign an appropriate name to monsterName\
+\pard\tx529\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+    \
+    \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (\cf13 \expnd0\expndtw0\kerning0
+player\'92s dex and his weapon bonus > monsters dex and armor bonus\cf0 \expnd0\expndtw0\kerning0
+) \{\
+        \
+        monster->\cf5 \expnd0\expndtw0\kerning0
+setHealth\cf0 \expnd0\expndtw0\kerning0
+(monster->\cf5 \expnd0\expndtw0\kerning0
+health\cf0 \expnd0\expndtw0\kerning0
+() - \cf14 \expnd0\expndtw0\kerning0
+player\'92s str and weapon bonus\cf0 \expnd0\expndtw0\kerning0
+);\
+        \
+        \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (\cf2 \expnd0\expndtw0\kerning0
+equipped\cf0 \expnd0\expndtw0\kerning0
+->\cf2 \expnd0\expndtw0\kerning0
+m_name\cf0 \expnd0\expndtw0\kerning0
+ == \cf15 \expnd0\expndtw0\kerning0
+"Magic fangs of sleep"\cf0 \expnd0\expndtw0\kerning0
+) \{\
+            \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+trueWithProbability\cf0 \expnd0\expndtw0\kerning0
+(\cf4 \expnd0\expndtw0\kerning0
+.3\cf0 \expnd0\expndtw0\kerning0
+))\{\
+                \cf14 \expnd0\expndtw0\kerning0
+put the monster to sleep for a random amount of time\cf0 \expnd0\expndtw0\kerning0
+\
+ \cf15 \expnd0\expndtw0\kerning0
+           \}\
+\cf0 \expnd0\expndtw0\kerning0
+          \cf14 \expnd0\expndtw0\kerning0
+. . . store appropriate action string\cf0 \expnd0\expndtw0\kerning0
+\
+\cf5 \expnd0\expndtw0\kerning0
+\}\
+\cf0 \expnd0\expndtw0\kerning0
+	\
+\
+	The Monster class inherits the Actor as well, but is also a base class for all the different monsters. The Monster class has a weapon pointer and a char type that stores its individual type, allowing for identification in the dungeon. The monster class has a canSmell() function which returns a bool based on whether or not the player is close enough (within 5 spaces) for the monster to find it. It has a findPath function which was an early attempt at the goblins move, however I did not finish the goblin\'92s move implementation. It also has a drop function, which checks if the monster is dead and then, if so, generates an object at that point with a certain probability.\
+\
+\cf3 \expnd0\expndtw0\kerning0
+void\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+Monster\cf0 \expnd0\expndtw0\kerning0
+::move(\cf3 \expnd0\expndtw0\kerning0
+char\cf0 \expnd0\expndtw0\kerning0
+ c)\{\
+    \
+   \cf6 \expnd0\expndtw0\kerning0
+//find the distance on each axis and use to determine direction of movement\
+\cf0 \expnd0\expndtw0\kerning0
+    \cf3 \expnd0\expndtw0\kerning0
+int\cf0 \expnd0\expndtw0\kerning0
+ r_distance = \cf5 \expnd0\expndtw0\kerning0
+row\cf0 \expnd0\expndtw0\kerning0
+() - \cf5 \expnd0\expndtw0\kerning0
+dungeon\cf0 \expnd0\expndtw0\kerning0
+()->\cf5 \expnd0\expndtw0\kerning0
+player\cf0 \expnd0\expndtw0\kerning0
+()->\cf5 \expnd0\expndtw0\kerning0
+row\cf0 \expnd0\expndtw0\kerning0
+();\
+    \cf3 \expnd0\expndtw0\kerning0
+int\cf0 \expnd0\expndtw0\kerning0
+ c_distance = \cf5 \expnd0\expndtw0\kerning0
+col\cf0 \expnd0\expndtw0\kerning0
+() - \cf5 \expnd0\expndtw0\kerning0
+dungeon\cf0 \expnd0\expndtw0\kerning0
+()->\cf5 \expnd0\expndtw0\kerning0
+player\cf0 \expnd0\expndtw0\kerning0
+()->\cf5 \expnd0\expndtw0\kerning0
+col\cf0 \expnd0\expndtw0\kerning0
+();\
+    \
+    \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+canSmell\cf0 \expnd0\expndtw0\kerning0
+())\{\
+        \
+        \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (\cf14 \expnd0\expndtw0\kerning0
+the monster is not asleep\cf0 \expnd0\expndtw0\kerning0
+) \{\
+            \
+            \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+(\cf14 \expnd0\expndtw0\kerning0
+the monster is next to the player\cf0 \expnd0\expndtw0\kerning0
+)\
+                \cf5 \expnd0\expndtw0\kerning0
+attack\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+dungeon\cf0 \expnd0\expndtw0\kerning0
+()->\cf5 \expnd0\expndtw0\kerning0
+player\cf0 \expnd0\expndtw0\kerning0
+());\
+            \
+            \cf3 \expnd0\expndtw0\kerning0
+else\cf0 \expnd0\expndtw0\kerning0
+ \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (\cf14 \expnd0\expndtw0\kerning0
+the player is to the left of the monster\cf0 \expnd0\expndtw0\kerning0
+)\{\
+            \
+                \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+(\cf14 \expnd0\expndtw0\kerning0
+the monster can move left aka not a wall\cf0 \expnd0\expndtw0\kerning0
+)\{\
+                    \cf14 \expnd0\expndtw0\kerning0
+monster move left\cf0 \expnd0\expndtw0\kerning0
+;\
+                \}\
+                \cf3 \expnd0\expndtw0\kerning0
+else\cf0 \expnd0\expndtw0\kerning0
+ \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ ( \cf14 \expnd0\expndtw0\kerning0
+the player is below the monster\cf0 \expnd0\expndtw0\kerning0
+)\{\
+                    \cf14 \expnd0\expndtw0\kerning0
+monster move down\cf0 \expnd0\expndtw0\kerning0
+;\
+                \}\
+                \cf3 \expnd0\expndtw0\kerning0
+else\cf0 \expnd0\expndtw0\kerning0
+ \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+( \cf14 \expnd0\expndtw0\kerning0
+the player is above the monster\cf0 \expnd0\expndtw0\kerning0
+)\{\
+                    \cf14 \expnd0\expndtw0\kerning0
+monster move up\cf0 \expnd0\expndtw0\kerning0
+;\
+                \}\
+           \cf14 \expnd0\expndtw0\kerning0
+repeat and check the right potation, the up position, and the down position\cf0 \expnd0\expndtw0\kerning0
+ \
+        \}\cf6 \expnd0\expndtw0\kerning0
+//end of sleep check\cf0 \expnd0\expndtw0\kerning0
+\
+        \cf3 \expnd0\expndtw0\kerning0
+else\cf0 \expnd0\expndtw0\kerning0
+\{ \cf14 \expnd0\expndtw0\kerning0
+aka the monster is asleep \cf0 \expnd0\expndtw0\kerning0
+\
+            \cf14 \expnd0\expndtw0\kerning0
+reduce the monster\'92s sleep time by one\cf0 \expnd0\expndtw0\kerning0
+\
+        \}\
+    \}\cf6 \expnd0\expndtw0\kerning0
+//end of can smell\cf0 \expnd0\expndtw0\kerning0
+\
+\}\cf6 \expnd0\expndtw0\kerning0
+//end of function\
+\
+\
+\cf0 \expnd0\expndtw0\kerning0
+	The Goblin class inherits monster however it implements its own canSmell() function to check 15 spaces away and not just 5. It also has a drop function that each monster has its own implementation of based on what item they may drop.\
+\
+\cf3 \expnd0\expndtw0\kerning0
+void\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+Goblin\cf0 \expnd0\expndtw0\kerning0
+::drop()\{\
+    \
+    \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (\cf14 \expnd0\expndtw0\kerning0
+there is not item at the goblins space\cf0 \expnd0\expndtw0\kerning0
+)\{\
+        \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+trueWithProbability\cf0 \expnd0\expndtw0\kerning0
+(\cf4 \expnd0\expndtw0\kerning0
+.1\cf0 \expnd0\expndtw0\kerning0
+))\{\
+            \cf3 \expnd0\expndtw0\kerning0
+int\cf0 \expnd0\expndtw0\kerning0
+ generated = \cf5 \expnd0\expndtw0\kerning0
+randInt\cf0 \expnd0\expndtw0\kerning0
+(\cf4 \expnd0\expndtw0\kerning0
+2\cf0 \expnd0\expndtw0\kerning0
+); \cf14 \expnd0\expndtw0\kerning0
+//create a random number\cf0 \expnd0\expndtw0\kerning0
+\
+                \cf14 \expnd0\expndtw0\kerning0
+//based on generated create either a magic axe or magic fangs\cf0 \expnd0\expndtw0\kerning0
+\
+			 \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (generated == \cf4 \expnd0\expndtw0\kerning0
+0\cf0 \expnd0\expndtw0\kerning0
+)\
+                    \cf5 \expnd0\expndtw0\kerning0
+dungeon\cf0 \expnd0\expndtw0\kerning0
+()->\cf2 \expnd0\expndtw0\kerning0
+object_vector\cf0 \expnd0\expndtw0\kerning0
+.\cf8 \expnd0\expndtw0\kerning0
+push_back\cf0 \expnd0\expndtw0\kerning0
+(\cf3 \expnd0\expndtw0\kerning0
+new\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+MagicAxe\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+row\cf0 \expnd0\expndtw0\kerning0
+(), \cf5 \expnd0\expndtw0\kerning0
+col\cf0 \expnd0\expndtw0\kerning0
+()));\
+                \cf3 \expnd0\expndtw0\kerning0
+if\cf0 \expnd0\expndtw0\kerning0
+ (generated == \cf4 \expnd0\expndtw0\kerning0
+1\cf0 \expnd0\expndtw0\kerning0
+)\
+                    \cf5 \expnd0\expndtw0\kerning0
+dungeon\cf0 \expnd0\expndtw0\kerning0
+()->\cf2 \expnd0\expndtw0\kerning0
+object_vector\cf0 \expnd0\expndtw0\kerning0
+.\cf8 \expnd0\expndtw0\kerning0
+push_back\cf0 \expnd0\expndtw0\kerning0
+(\cf3 \expnd0\expndtw0\kerning0
+new\cf0 \expnd0\expndtw0\kerning0
+ \cf2 \expnd0\expndtw0\kerning0
+MagicFangs\cf0 \expnd0\expndtw0\kerning0
+(\cf5 \expnd0\expndtw0\kerning0
+row\cf0 \expnd0\expndtw0\kerning0
+(), \cf5 \expnd0\expndtw0\kerning0
+col\cf0 \expnd0\expndtw0\kerning0
+()));\
+        \}\
+    \}\
+\}\
+\pard\tx529\pardeftab720
+
+\fs16 \cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx529\pardeftab720
+
+\fs18 \cf0 \expnd0\expndtw0\kerning0
+	The SnakeWoman and BoogeyMan class inherits monster, with only minor changes in the drop function based on their respective drops. The Dragon class also inherits Monster, however it implements its own move function which doesn't really move at all ironically. It just checks for the player and if the player is next to it it attacks. Also each turn it has a chance to gain health. \
+\
+	I chose to keep all the objects in one GameObject class to reduce the number of files I would have. Each weapon has its specified attributes and an action that describes how it attacks. I chose to make just one scroll class that stored its name rather than a new class for each of the 5 scrolls. Then in the dungeon class I just have a useItem() function that checks the inventory and if it is called on a scroll, it reads the name of the scroll and then based on the name, it implements the scroll\'92s effect, therefor eliminating the need to make 5 separate classes.\
+\
+}
